@@ -269,6 +269,7 @@ function openCity(evt, cityName) {
 				que2 = que[queinc];
 				nofbox = que2[1].length;	
 				chk = que2[0].indexOf('are');
+				ans = que2[1];
 				adds = '';
 				if(chk > 0)  adds = 's';
 				obj.innerText =  (queinc + 1) + '. ' + que2[0] + ' ' + tit[titinc] + adds;		
@@ -309,6 +310,18 @@ function openCity(evt, cityName) {
 				tarobj = ev.currentTarget;
 			}			
 			function CheckAns(){
+				
+				tabcontent = document.getElementsByClassName("rectc");
+				for (i = 0; i < nofbox; i++) {
+						ftext = tabcontent[i].innerText
+						stext = pron[queinc][ans[i]];
+						alert[ans[i]];
+						alert(ftext);
+						alert(stext);
+						if(ftext == stext)
+							alert("ok");
+
+				}				
 				
 			}
 		</script>
