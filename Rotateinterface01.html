@@ -1,0 +1,679 @@
+
+<!doctype html>
+<html lang="en">
+
+   <head>
+      <meta charset="utf-8">
+
+      <title>3D Graphics in HTML5 Canvas</title>
+
+      <meta name="author" content="Kevin Roast">
+
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+      <link rel="stylesheet" href="css/reveal.min.css">
+      <link rel="stylesheet" href="css/theme/sky.css" id="theme">
+
+      <!-- For syntax highlighting -->
+      <link rel="stylesheet" href="css/zenburn.css">
+   </head>
+
+   <body>
+
+      <div class="reveal">
+
+         <div class="slides">
+            <section data-transition="zoom">
+               <h1>3D Graphics in HTML5 Canvas</h1>
+               <p>by Kevin Roast</p>
+               <br><br>
+               <p><small>More HTML5 trickery at <a href="http://www.kevs3d.co.uk/dev">kevs3d.co.uk/dev</a> and updates via <a href="http://twitter.com/kevinroast">@kevinroast</a></small></p>
+            </section>
+
+            <section>
+               <h2>Not WebGL!</h2>
+               <p>WebGL ~= <a href="http://www.khronos.org/webgl/wiki/WebGL_and_OpenGL_Differences">OpenGL ES 2.0</a></p>
+               <p>GPU Hardware, Programmable Shaders</p>
+               <p><img height="320" src="assets/webgl.jpg"></p>
+            </section>
+
+            <section>
+               <h2>Graphics. Oldskool.</h2>
+               <p>Emulating the classic OpenGL &quot;fixed function pipeline&quot; in <em>software</em>.</p>
+               <p>For fun, not profit.</p>
+               <p><img height="240" src="assets/teapot-example.jpg"> <img height="240" src="assets/foleyvandam.jpg"></p>
+            </section>
+
+            <section>
+               <h2>Start Simple</h2>
+               <q>&quot;From small beginnings come great things.&quot;</q>
+               <p><img class="fragment roll-in" height="240" src="assets/teapot-example-wire.jpg">&nbsp;&nbsp;<img class="fragment roll-in" height="240" src="assets/toad.jpg"></p>
+            </section>
+            
+            <section data-transition="zoom">
+               <p><img height="600" src="assets/crysis3.jpg"></p>
+            </section>
+            
+            <section>
+               <h2>Cartesian coordinate system</h2>
+               <p>Signed distances to three mutually perpendicular planes (pardon?)</p>
+               <p>X axis goes to right</p>
+               <p>Y axis goes up</p>
+               <p>Z axis goes &quot;into&quot; the screen</p>
+               <p><img width="300" src="assets/XYZ_axes.png"><p>
+            </section>
+            
+            <section>
+               <h2>Object Geometry</h2>
+               <p>List of Points {X, Y, Z}</p>
+               <p>List of Polygons (triangles)</p>
+               <p>Three vertices V0,V1,V2 connect a triangle together</p>
+               <p>Materials; colour, properties, textures</p>
+            </section>
+            
+            <section>
+               <h2>Hello triangle</h2>
+               <pre><code>
+{
+   vertices: [
+      {x:0, y:0, z:0},
+      {x:1, y:1, z:0},
+      {x:1, y:0, z:0}
+   ],
+   polygons: [
+      {
+         vertices: [0,1,2],
+         colour: [255,255,255]
+      }
+   ]
+}
+               </code></pre>
+               <p style="position:absolute;top:148px;right:80px"><img class="fragment roll-in" height="240" src="assets/triangle.png">
+            </section>
+            
+            <section>
+               <h2>Matrix Multiplication - scary math!</h2>
+               <p class="fragment">Homogeneous coordinates</p>
+               <p class="fragment">4D Transformation matrices</p>
+               <p class="fragment">Model, view projection</p>
+               <p class="fragment">Cross product, dot product</p>
+               <p class="fragment">Euclidean geometry, quaternions</p>
+               <p class="fragment">!!!KILL ME NOW!!!</p>
+            </section>
+            
+            <section>
+               <h2>Homogeneous coordinates</h2>
+               <p>Consider 3D vertices as a (x,y,z) triplet.</p>
+               <p>Introduce 4th element 'w'. Now have (x,y,z,w) vectors.</p>
+               <br>
+               <div class="fragment">
+               <h3>remember this</h3>
+               <p>If w == 1, then the vector (x,y,z,1) - <em>a position in space.</em></p>
+               <p>If w == 0, then the vector (x,y,z,0) - <em>a direction.</em></p>
+               <p class="fragment"><a href="http://en.wikipedia.org/wiki/Homogeneous_coordinates">Homogeneous coordinates</a> allow of use of a single mathematical formula to deal with both cases.</p>
+               <p class="fragment">Solving of equations for any coordinate - including those at infinity by using 'w' to map to projective space.</p>
+               </div>
+            </section>
+            
+            <section>
+               <h2>Transformation matrices</h2>
+               <p>A matrix is an array of numbers with a predefined number of rows and colums.</p>
+               <p>In 3D graphics we only use 4x4 matrices.</p>
+               <p>Allows the transformation of (x,y,z,w) vertices.</p>
+               <div class="fragment">
+               <br>
+               <h3>multiplying the vertex with the matrix</h3>
+               <p>
+\[
+\begin{bmatrix}
+a &amp; b &amp; c &amp; d \\
+e &amp; f &amp; g &amp; h \\
+i &amp; j &amp; k &amp; l \\
+m &amp; n &amp; o &amp; p
+\end{bmatrix}
+\times
+\begin{bmatrix}
+x \\
+y \\
+z \\
+w
+\end{bmatrix} =
+\begin{bmatrix}
+ax + by + cz + dw \\
+ex + fy + gz + hw \\
+ix + jy + kz + lw \\
+mx + ny + oz + pw
+\end{bmatrix}
+\]
+               </p>
+               </div>
+            </section>
+            
+            <section>
+               <h2>Building matrices is hard</h2>
+               <h2>Multiplying by them is tedious</h2>
+               <div class="fragment">
+               <p>glMatrix (see <a href="http://glmatrix.net/">http://glmatrix.net/</a>)</p>
+               <p><em>&quot;JavaScript Matrix and Vector library for High Performance WebGL apps&quot;</em></p>
+               <pre><code>
+var m = mat4.create();
+mat4.multiply(out, m1, m2);
+mat4.rotateX(out, m, radians);
+var v = vec3.fromValues(1, 0, 0);
+mat4.scale(out, m, v);
+mat4.translate(out, m, v);
+               </code></pre>
+               </div>
+            </section>
+            
+            <section>
+               <h2>Coordinate Transformations</h2>
+               <h3>The 3D graphics pipeline</h3>
+               <p>Local Object coordinates -&gt; local matrix</p>
+               <p>World coordinates -&gt; camera matrix</p>
+               <p>View (or Eye) coordinates -&gt; perspective matrix</p>
+               <p>Perspective (&amp; clip) coordinates -&gt; viewport transformation</p>
+               <p>Screen coordinates</p>
+               <p><img width="640" src="assets/gl_transform02.png"></p>
+            </section>
+            
+            <section>
+               <h2>Local Object coordinates</h2>
+               <p><img width="640" src="assets/t-model.png"></p>
+               <p>Each entity typically centred on the origin.</p>
+            </section>
+            <section>
+               <h2>local matrix &gt; World coordinates</h2>
+               <p><img width="640" src="assets/t-world.png"></p>
+               <p>Multiply by local matrix; encodes scale, rotate, translate...</p>
+               <p>Lighting is performed in 'world space'</p>
+            </section>
+            <section data-transition="zoom">
+               <h2>Move the universe not the camera</h2>
+               <q>&quot;I understand how the engines work now. They don't move the ship at all. The ship stays where it is and the engines move the universe around it.&quot;&nbsp;&nbsp;- Cubert Farnsworth</q>
+               <img width="512" src="assets/Futurama_Planet_Express_spaceship.jpg">
+            </section>
+            <section>
+               <h2>camera matrix &gt; View (or Eye) coordinates</h2>
+               <p><img width="640" src="assets/t-cameraspace.png"></p>
+               <p>Multiply each vertex by camera matrix</p>
+            </section>
+            <section>
+               <h2>perspective matrix &gt; Perspective (&amp; clip) coordinates</h2>
+               <p><img width="640" src="assets/t-projectionspace.png"></p>
+               <p>Multiply each vertex by perspective matrix</p>
+            </section>
+            <section>
+               <h2>behind the frustum (normalised device coordinates -1 to 1)</h2>
+               <p><img width="320" src="assets/t-ndc.png"></p>
+               <p>Ignore polygons completely outside the clipping bounds</p>
+            </section>
+            <section>
+               <h2>screen coordinates</h2>
+               <p><img width="400" src="assets/t-screenspace.png"></p>
+               <p>We know what to draw, and where to draw it...</p>
+            </section>
+            
+            <section>
+               <h2>lighting and shading</h2>
+               <p>Global Illumination = Ambient Light + Diffuse Light + Specular Light</p>
+               <br>
+               <p class="fragment">Ambient Lighting - constant lighting in all directions, colors all pixels of an object the same.</p>
+               <p class="fragment">Diffuse Lighting - both the light direction and the object surface normal. Varies across surface of an object due to light direction and changing surface normal vector.</p>
+               <p class="fragment">Specular Lighting - the bright highlights that occur when light hits an object and reflects back toward the camera.</p>
+            </section>
+            
+            <section>
+               <h2>lighting and shading - normal vector</h2>
+               <p>Perpendicular to the surface.</p>
+               <p>The <a href="http://en.wikipedia.org/wiki/Cross_product">cross product</a> of two sides of the triangle equals the surface normal.</p>
+               <div class="fragment">
+               <p>\[ {a} = \{ a_1, a_2, a_3 \} &nbsp;&nbsp;&nbsp; {b} = \{ b_1, b_2, b_3 \} \]</p>
+               <p>\[ {a} \times {b} = \{ a_2b_3 - a_3b_2 , a_3b_1 - a_1b_3 , a_1b_2 - a_2b_1 \} \]</p>
+               <p><img width="200" src="assets/normals.png"></p>
+               </div>
+            </section>
+            
+            <section>
+               <h2>lighting and shading - dot product</h2>
+               <p>Multiplication with another Vector - the &quot;dot product&quot;</p>
+               <p>The angle between two vectors.</p>
+               <div class="fragment">
+               <p>\[{a}\cdot {b} = \|{a}\| \|{b}\| \cos\theta\]</p>
+               <p><img width="200" src="assets/dot.jpg"></p>
+               </div>
+            </section>
+            
+            <section>
+               <h2>distant lighting</h2>
+               <p>Infinitely distant light, parallel rays</p>
+               <p>No position, just a direction</p>
+               <p>Very simple dot product calculation - inverse of the light direction</p>
+               <p><canvas id="c-distantlight" width="300" height="300" style="background-color:#333"></canvas>&nbsp;<img style="margin:0" height="300" src="assets/distant_light.png"></p>
+            </section>
+            
+            <section>
+               <h2>point lighting</h2>
+               <p>Positional light with fall-off</p>
+               <p>With a position, light emits equally in all directions</p>
+               <p>Dot product calculation based on angle to light in scene and distance</p>
+               <p><img style="margin:0" height="300" src="assets/point_light.png">&nbsp;<canvas id="c-pointlight" width="300" height="300" style="background-color:#333"></canvas></p>
+            </section>
+            
+            <section>
+               <h2>rendering</h2>
+               <h3>HTML5 canvas basic drawing primitives</h3>
+               <ul>
+                  <li>Rectangles</li>
+                  <li>Paths - start and end through N points</li>
+                  <li>Stroke path (outlines)</li>
+                  <li>Fill path (solid shape)</li>
+                  <li>Arcs and Bezier curves</li>
+                  <li>Images - very flexible; any section, resize, clip to path</li>
+               </ul>
+               <p><img width="200" src="assets/canvasdrawing.png"></p>
+            </section>
+            
+            <section>
+               <h2>Putting it all together</h2>
+               <h3>phoria.js</h3>
+               <a href="https://github.com/kevinroast/phoria.js">https://github.com/kevinroast/phoria.js</a>
+               <a href="http://www.kevs3d.co.uk/dev/phoria">http://www.kevs3d.co.uk/dev/phoria</a>
+               <p><img width="600" src="assets/phoria.png"></p>
+            </section>
+            
+            <section>
+               <h2>Putting it all together</h2>
+               <p>Object definition, 3D transformation pipeline, rendering to HTML5 canvas...</p>
+               <br>
+               <p><canvas id="c-together" width="540" height="400" style="background-color:#aaa"></canvas></p>
+            </section>
+            
+            <section>
+               <div style="position:absolute;width:100%;height:100%;top:-140%;xbackground-color:#555;z-index:-1"><canvas id="c-next" width="900" height="700" style="xbackground-color:#fff"></canvas></div>
+               <h2>Where do you go next?</h2>
+               <p>Physics, animation, texturing, particles...</p>
+            </section>
+            
+            <section>
+               <h2>Resources</h2>
+               <h3>HTML5 3D libraries and tutorials</h3>
+               <small>
+               <p><a href="http://bit.ly/3dpresentation">This presentation</a></p>
+               <p><a href="https://github.com/kevinroast/phoria.js">https://github.com/kevinroast/phoria.js</a></p>
+               <p><a href="https://code.google.com/p/jsc3d/">https://code.google.com/p/jsc3d/</a></p>
+               <p><a href="https://code.google.com/p/mea3d/">https://code.google.com/p/mea3d/</a></p>
+               <p><a href="http://blogs.msdn.com/b/davrous/archive/2013/06/13/tutorial-series-learning-how-to-write-a-3d-soft-engine-from-scratch-in-c-typescript-or-javascript.aspx">tutorial-series-learning-how-to-write-a-3d-soft-engine-from-scratch</a></p>
+               <p><a href="http://gamedevelopment.tutsplus.com/tutorials/lets-build-a-3d-graphics-engine-points-vectors-and-basic-concepts--gamedev-8143">lets-build-a-3d-graphics-engine-points-vectors-and-basic-concepts</a></p>
+               </small>
+               <br><br>
+               <h3>WebGL 3D libraries</h3>
+               <small>
+               <p><a href="https://github.com/mrdoob/three.js">https://github.com/mrdoob/three.js</a></p>
+               <p><a href="http://www.glge.org/">http://www.glge.org/</a></p>
+               <p><a href="http://www.babylonjs.com/">http://www.babylonjs.com/</a></p>
+               <p><a href="http://scenejs.org/">http://scenejs.org/</a></p>
+               </small>
+            </section>
+
+         </div>
+
+      </div>
+
+      <script src="jsfiles/head.min.js"></script>
+      <script src="jsfiles/reveal.min.js"></script>
+      <script src="jsfiles/phoria-min.js"></script>
+
+      <script>
+
+var requestAnimFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame ||
+              window.mozRequestAnimationFrame || window.msRequestAnimationFrame || 
+              function(c) {window.setTimeout(c, 15)};
+
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+   controls: true,
+   progress: true,
+   history: true,
+   center: true,
+
+   theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+   transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+   
+   math: {
+      // mathjax: 'http://cdn.mathjax.org/mathjax/latest/MathJax.js',
+      config: 'TeX-AMS_HTML-full'
+   },
+   
+   // Optional libraries used to extend on reveal.js
+   dependencies: [
+      //{ src: '../plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+      { src: '../plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+      { src: '../plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
+      { src: '../plugin/math/math.js', async: true }
+   ]
+});
+
+function createPhoriaScene(canvasId, fnAnimCallback, fnClickCallback)
+{
+   var canvas = document.getElementById(canvasId);
+   
+   // create the scene and setup camera, perspective and viewport
+   var scene = Phoria.Scene.create({
+      camera: {
+         position: {x:0.0, y:10.0, z:-30.0},
+         lookat: {x:0.0, y:0.0, z:0.0}
+      },
+      perspective: {
+         aspect: canvas.width / canvas.height
+      },
+      viewport: {
+         width: canvas.width,
+         height: canvas.height
+      }
+   });
+   
+   // create a canvas renderer
+   var renderer = new Phoria.CanvasRenderer(canvas);
+   var pause = true;
+   var fnAnimate = function() {
+      // manipulate...
+      if (fnAnimCallback) fnAnimCallback.call(this);
+      
+      // execute the model view 3D pipeline and render the scene
+      scene.modelView();
+      renderer.render(scene);
+      if (!pause) requestAnimFrame(fnAnimate);
+   };
+   
+   // click binding
+   canvas.addEventListener('click', function(e) {
+      pause = !pause;
+      if (!pause)
+      {
+         if (fnClickCallback) fnClickCallback.call(this);
+         requestAnimFrame(fnAnimate);
+      }
+   }, false);
+   
+   return scene;
+}
+
+// create Phoria scenes for the slides
+
+// SCENE 1 - "Putting it all together"
+var rotates = [0,0,0]; 
+var s1 = createPhoriaScene("c-together", function() {
+   // rotate local matrix of an object
+   testCube.rotateY(0.5*Phoria.RADIANS);
+   // translate local matrix of child object - will receive rotation from parent
+   childCube.identity().translateY(Math.sin(Date.now() / 1000) + 3.5);
+   // translate visible light objects around the origin - will rotate child Light emitters
+   var sine = Math.sin(Date.now() / 500);
+   blueLightObj.identity().rotateY(rotates[0]+=1*Phoria.RADIANS).translateY(sine);
+   redLightObj.identity().rotateY(rotates[1]+=0.5*Phoria.RADIANS).translateY(sine);
+   greenLightObj.identity().rotateY(rotates[2]+=1.5*Phoria.RADIANS).translateY(sine);
+});
+s1.camera.position.y = 6;
+s1.camera.position.z = -17;
+// add a grid to help visualise camera position etc.
+var plane = Phoria.Util.generateTesselatedPlane(16,16,0,20);
+s1.graph.push(Phoria.Entity.create({
+   points: plane.points,
+   edges: plane.edges,
+   polygons: plane.polygons,
+   style: {
+      drawmode: "wireframe",
+      shademode: "lightsource",
+      linewidth: 0.5,
+      objectsortmode: "back"
+   }
+}));
+var cube = Phoria.Util.generateSphere(2, 8, 16);
+var testCube = Phoria.Entity.create({
+   points: cube.points,
+   edges: cube.edges,
+   polygons: cube.polygons,
+   style: {
+      drawmode: "solid"
+   }
+});
+s1.graph.push(testCube);
+cube = Phoria.Util.generateUnitCube(0.5);
+var childCube = Phoria.Entity.create({
+   points: cube.points,
+   edges: cube.edges,
+   polygons: cube.polygons,
+   style: {
+      color: [0,0,0],
+      drawmode: "wireframe"
+   }
+});
+testCube.children.push(childCube);
+var blueLightObj = Phoria.Entity.create({
+   points: [{x:0, y:2, z:-5}],
+   style: {
+      color: [0,0,255],
+      drawmode: "point",
+      shademode: "plain",
+      linewidth: 5,
+      linescale: 2
+   }
+});
+s1.graph.push(blueLightObj);
+var blueLight = Phoria.PointLight.create({
+   position: {x:0, y:2, z:-5},
+   color: [0,0,1]
+});
+blueLightObj.children.push(blueLight);
+var redLightObj = Phoria.Entity.create({
+   points: [{x:0, y:2, z:5}],
+   style: {
+      color: [255,0,0],
+      drawmode: "point",
+      shademode: "plain",
+      linewidth: 5,
+      linescale: 2
+   }
+});
+s1.graph.push(redLightObj);
+var redLight = Phoria.PointLight.create({
+   position: {x:0, y:2, z:5},
+   color: [1,0,0]
+});
+redLightObj.children.push(redLight);
+var greenLightObj = Phoria.Entity.create({
+   points: [{x:0, y:2, z:5}],
+   style: {
+      color: [0,255,0],
+      drawmode: "point",
+      shademode: "plain",
+      linewidth: 5,
+      linescale: 2
+   }
+});
+s1.graph.push(greenLightObj);
+var greenLight = Phoria.PointLight.create({
+   position: {x:0, y:2, z:5},
+   color: [0,1,0]
+});
+greenLightObj.children.push(greenLight);
+
+
+// SCENE 2 - "Distant Lighting"
+var obj = Phoria.Util.generateSphere(8, 16, 32);
+var sphere2 = Phoria.Entity.create({
+   points: obj.points,
+   edges: obj.edges,
+   polygons: obj.polygons,
+   style: {
+      fillmode: "inflate", //hiddenline|inflate
+      color: [255,200,128],
+      diffuse: 0.95
+   }
+});
+var s2 = createPhoriaScene("c-distantlight", function() {
+   sphere2.rotateY(0.005);
+});
+s2.graph.push(sphere2);
+s2.graph.push(Phoria.DistantLight.create({
+   direction: {x:-1.0, y:-1.0, z:0.0}
+}));
+
+
+// SCENE 3 - "Point Lighting"
+var obj = Phoria.Util.generateSphere(6, 16, 32);
+var sphere3 = Phoria.Entity.create({
+   points: obj.points,
+   edges: obj.edges,
+   polygons: obj.polygons,
+   style: {
+      fillmode: "inflate", //hiddenline|inflate
+      color: [255,200,128],
+      diffuse: 0.95
+   }
+});
+var lightObj = Phoria.Entity.create({
+   points: [{x:-10.0, y:2, z:0}],
+   style: {
+      color: [255,255,255],
+      drawmode: "point",
+      shademode: "plain",
+      linewidth: 5,
+      linescale: 2
+   }
+});
+var s3 = createPhoriaScene("c-pointlight", function() {
+   sphere3.rotateY(0.005);
+   lightObj.identity().rotateY( (Math.sin(Date.now() / 500))*Math.PI + Math.PI/2);
+});
+s3.graph.push(sphere3);
+s3.graph.push(lightObj);
+lightObj.children.push(Phoria.PointLight.create({
+   position: {x:-10.0, y:0.0, z:0.0}
+}));
+
+
+// SCENE 4 - "next steps"
+var emitter = Phoria.EmitterEntity.create({
+   position: {x:0, y:0, z:5},
+   positionRnd: {x:0.25, y:0.1, z:0.25},
+   rate: 150,
+   velocity: {x:0, y:0.2, z:-0.15},
+   velocityRnd: {x:0.05, y:0.05, z:0.05},
+   lifetime: 3000,
+   style: {
+      linewidth: 15,
+      linescale: 1
+   },
+   onParticle: function (p) {
+      var t = Date.now()/1000;
+      p.style = Phoria.Util.clone(p.style);
+      p.style.color = [~~((Math.sin(t))*128)+128,~~((Math.sin(t/2))*128)+128,~~((Math.cos(t))*128)+128];
+   }
+});
+// cobra MK3
+var cobra1 = Phoria.Entity.create({
+      points: [{x:0.00000,y:15.00000,z:0.00000},
+         {x:16.00000,y:-0.50000,z:32.50000},
+         {x:-16.00000,y:-0.50000,z:32.50000},
+         {x:16.00000,y:-15.00000,z:-32.50000},
+         {x:-16.00000,y:-15.00000,z:-32.50000},
+         {x:-44.00000,y:10.00000,z:-32.50000},
+         {x:-60.00000,y:-3.00000,z:-13.00000},
+         {x:-65.00000,y:-3.00000,z:-32.50000},
+         {x:44.00000,y:10.00000,z:-32.50000},
+         {x:60.00000,y:-3.00000,z:-13.00000},
+         {x:65.00000,y:-3.00000,z:-32.50000},
+         {x:0.00000,y:15.00000,z:-32.50000}],
+      polygons: [{vertices:[8,0,1]},
+           {vertices:[1,0,2]},
+           {vertices:[9,1,3]},
+           {vertices:[1,2,4]},
+           {vertices:[3,1,4]},
+           {vertices:[6,7,4]},
+           {vertices:[2,0,5]},
+           {vertices:[6,2,5]},
+           {vertices:[4,2,6]},
+           {vertices:[6,5,7]},
+           {vertices:[11,0,8]},
+           {vertices:[5,11,8]},
+           {vertices:[7,5,8]},
+           {vertices:[4,7,8]},
+           {vertices:[3,4,8]},
+           {vertices:[10,3,8]},
+           {vertices:[8,1,9]},
+           {vertices:[10,8,9]},
+           {vertices:[3,10,9]},
+           {vertices:[5,0,11]}],
+      style: {
+         color: [200,202,210],
+         shademode: "lightsource",
+         diffuse: 0.6,
+         specular: 32
+      }
+   });
+cobra1.scaleN(0.05).translateY(-700).rotateX(-Math.PI*0.5);
+cobra1.onScene(function() {
+   this.translateZ(2.5);
+   this.rotateZ(Math.PI*0.0065)
+});
+var bitmaps = [];
+bitmaps.push(Phoria.Util.generateRadialGradientBitmap(16, "rgba(128,64,32,1)", "rgba(128,64,32,0)"));
+var engines1 = Phoria.EmitterEntity.create({
+   position: {x:-8, y:0, z:-35},
+   positionRnd: {x:0.25, y:0.0, z:0.0},
+   rate: 50,
+   velocity: {x:0, y:-0.075, z:0},
+   velocityRnd: {x:0.0, y:-0.01, z:0.0},
+   lifetime: 500,
+   style: {
+      compositeOperation: "lighter",
+      shademode: "sprite",
+      objectsortmode: "back",
+      linewidth: 25,
+      linescale: 1,
+      sprite: 0
+   }
+});
+engines1.textures.push(bitmaps[0]);
+var engines2 = Phoria.EmitterEntity.create({
+   position: {x:8, y:0, z:-35},
+   positionRnd: {x:0.25, y:0.0, z:0.0},
+   rate: 50,
+   velocity: {x:0, y:-0.075, z:0},
+   velocityRnd: {x:0.0, y:-0.01, z:0.0},
+   lifetime: 500,
+   style: {
+      compositeOperation: "lighter",
+      shademode: "sprite",
+      objectsortmode: "back",
+      linewidth: 25,
+      linescale: 1,
+      sprite: 0
+   }
+});
+engines2.textures.push(bitmaps[0]);
+cobra1.children.push(engines1, engines2);
+var s4 = createPhoriaScene("c-next", function() {
+   if (cobra1._cameracoords && cobra1._cameracoords[0][2] > -20)
+   {
+      cobra1.identity().scaleN(0.05).translateY(-700).rotateX(-Math.PI*0.5);
+   }
+}, function() {
+   emitter._lastEmitTime = Date.now();
+});
+s4.graph.push(emitter);
+s4.graph.push(cobra1);
+s4.graph.push(Phoria.PointLight.create({
+   position: {x:-2.0, y:-2.0, z:-10.0}
+}));
+
+      </script>
+
+   </body>
+</html>
