@@ -1,0 +1,379 @@
+<html>
+	<head>
+		<title></title>
+		<style>
+		
+/* Style the tab */
+.tab {
+    overflow: hidden;
+//    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+	
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
+	border-top-right-radius: 8px;	
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+    background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+	background-color: #ccc;
+	border-bottom-right-radius: 8px;
+	border-bottom-left-radius: 8px;
+}
+
+			.tablinks {
+				border-top-right-radius: 8px;
+				border-top-left-radius: 8px;	
+				border: 1px solid #ccc;				
+			}
+			.rect {
+				width: 100px;
+				height: 50px;
+				border:1px solid #ffccaa;
+				text-align: center;
+				vertical-align: middle;
+				display:table-cell;
+				cursor: pointer;
+			}		
+
+			.rectc {
+				width: 100px;
+				height: 50px;
+				border:1px solid #ffccaa;
+				text-align: center;
+				vertical-align: middle;
+				display:block;
+				cursor: pointer;
+			}					
+			.brect {
+				width: 100px;
+				height: 50px;
+				border:1px solid #ffccaa;
+				border-radius: 8px;
+				text-align: center;
+				vertical-align: middle;
+				display:table-cell;
+				cursor: pointer;
+			}
+			.qrect {
+				width: 500px;
+				height: 50px;
+				border:1px solid #ffccaa;
+				//text-align: center;
+				vertical-align: middle;
+				display:table-cell;
+			}			
+			.trect {
+				width: 500px;
+				height: 50px;
+				//border:1px solid #ffccaa;
+				//text-align: center;
+				vertical-align: middle;
+				display:table-cell;
+			}		
+			.noborder {
+				border:none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<table>
+			<tr>
+				<td>
+					<table>
+						<tr>
+							<td class="trect" id="titleid"></td>
+						</tr>
+					</table>				
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table>
+						<tr>
+							<td  class="qrect" id="questionid"></td>
+							<td> <div class="brect" onclick="CheckAns()">Check</div></td>
+							<td> <div class="brect" id="result"></div></td>
+						</tr>
+					</table>				
+				</td>
+			</tr>			
+			<tr>
+				<td>
+					<table>
+						<tr>
+							<td><div class="rectc" id="cont1" onclick="remme(event)"></div></td>
+							<td><div class="rectc" id="cont2" onclick="remme(event)"></div></td>
+							<td><div class="rectc" id="cont3" onclick="remme(event)"></div></td>
+							<td><div class="rectc" id="cont4" onclick="remme(event)"></div></td>
+						</tr>
+					</table>								
+				</td>
+			</tr>
+			<tr>
+				<td>
+
+				</td>
+			</tr>			
+			<tr>
+				<td>
+					<table>
+						<tr>
+							<td><div class="rect noborder"></div></td>
+							<td><div class="rect noborder"></div></td>						
+							<td><div class="brect" onclick="nextQue('Prev')">Previous</div></td>
+							<td><div class="brect" onclick="nextQue('Next')">Next</div></td>
+						</tr>
+					</table>				
+				</td>
+			</tr>						
+		</table>
+		
+<div class="tab">
+  <button class="tablinks" onclick="openCity(event, 'Subject')">Subject Pronoun</button>
+  <button class="tablinks" onclick="openCity(event, 'Object')">Object Pronoun</button>
+  <button class="tablinks" onclick="openCity(event, 'Possessive')">Possesive Pronoun</button>
+</div>
+
+	<div id="Subject" class="tabcontent">
+		<table>
+			<tr>
+				<td><div class="rect" onclick="takeme(event)">I</div></td>
+				<td><div class="rect" onclick="takeme(event)">You</div></td>
+				<td><div class="rect" onclick="takeme(event)">He</div></td>
+				<td><div class="rect" onclick="takeme(event)">She</div></td>
+				<td><div class="rect" onclick="takeme(event)">We</div></td>
+				<td><div class="rect" onclick="takeme(event)">you</div></td>
+				<td><div class="rect" onclick="takeme(event)">They</div></td>							
+			</tr>
+		</table>		
+	</div>
+
+	<div id="Object" class="tabcontent">
+		<table>
+			<tr>
+				<td><div class="rect" onclick="takeme(event)">me</div></td>
+				<td><div class="rect" onclick="takeme(event)">you</div></td>
+				<td><div class="rect" onclick="takeme(event)">him</div></td>
+				<td><div class="rect" onclick="takeme(event)">her</div></td>
+				<td><div class="rect" onclick="takeme(event)">us</div></td>
+				<td><div class="rect" onclick="takeme(event)">you</div></td>
+				<td><div class="rect" onclick="takeme(event)">them</div></td>							
+			</tr>
+		</table>		
+	</div>
+
+	<div id="Possessive" class="tabcontent">
+		<table>
+			<tr>
+				<td><div class="rect" onclick="takeme(event)">my</div></td>
+				<td><div class="rect" onclick="takeme(event)">your</div></td>
+				<td><div class="rect" onclick="takeme(event)">his</div></td>
+				<td><div class="rect" onclick="takeme(event)">her</div></td>
+				<td><div class="rect" onclick="takeme(event)">our</div></td>
+				<td><div class="rect" onclick="takeme(event)">your</div></td>
+				<td><div class="rect" onclick="takeme(event)">their</div></td>							
+			</tr>
+		</table>		
+	</div>
+
+<script>
+function openCity(evt, cityName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(cityName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
+</script>
+		
+		<script>
+
+			var tit = [
+			"subject pronoun",
+			"object pronoun",
+			"possessive pronoun"
+			];		
+			var titlen = tit.length - 1;
+			var que = [
+			["What are the first person's",[0, 5]],
+			["What are the second person's",[1, 6]],
+			["What are the third person's",[2,3,4,7]],		
+			["What is the first person singular",[0]],
+			["What is the first person plural",[5]],
+			["What is the second person singular",[1]],
+			["What is the second person plural",[6]],
+			["What are the third persons singular",[2,3,4]],
+			["What is the third person plural",[7]]			
+			];
+			var quelen = que.length - 1;
+			var pron = [
+				['I','You','He','She','It','We','You','They'],
+				['me','you','him','her','it','us','you','them'],
+				['my','your','his','her','its','our','your','their']
+			];
+			function filldata(idname){
+				
+			}
+
+		</script>
+		<script>
+			titinc = -1;
+			queinc = 0;
+			titlen = tit.length;
+			quelen = que.length ;
+			isOver = false;
+			var tarobj;
+			var ans;
+			init();	
+			function init(){
+			/*
+			if(tarobj == null) 			{
+				tarobj = document.getElementById("cont1");
+			}
+			else {
+				objid = tarobj.id 
+				nxtNo = objid.slice(-1);
+				if(nxtNo >= nofbox){
+					tarobj = null;
+				}
+				else {
+				
+					tarobj = document.getElementById("cont" + ++nxtNo);
+				}
+			}
+			*/
+				DispQue();
+			}
+			function DispQue(){
+			
+				if(queinc == 0){
+					if(titinc < titlen)
+						titinc++;
+					else
+						titinc = 0;					
+					//obj = document.getElementById("titleid");
+					//obj.innerText =  tit[titinc];
+
+				}
+				obj = document.getElementById("questionid");
+				que2 = que[queinc];
+				nofbox = que2[1].length-1;	
+				chk = que2[0].indexOf('are');
+				ans = que2[1];
+				adds = '';
+				if(chk > 0)  adds = 's';
+				obj.innerText =  (queinc + 1) + '. ' + que2[0] + ' ' + tit[titinc] + adds;		
+
+				isOver = false;
+				rsltbox = document.getElementById("result");
+				rsltbox.innerText = "Hi";
+				rsltbox.style.display = "none";
+				showBox();				
+			}
+
+			function nextQue(arg) {
+				var obj = document.getElementById("questionid");
+				var nofbox = 1;
+				if(arg == "Prev"){
+					if(queinc > 0)
+						queinc--;
+				}
+				else {
+					if(queinc < quelen)
+						queinc++;
+					else {
+						queinc = 0;
+					}
+				}								
+				DispQue();
+			}
+			function showBox(){
+				tabcontent = document.getElementsByClassName("rectc");
+				for (i = 0; i <= 4; i++) {
+
+					if(i <= nofbox){
+						 tabcontent[i].style.display = "block";
+						 tabcontent[i].innerText = "";
+						}
+					else
+						tabcontent[i].style.display = "none";
+				}				
+			}
+			
+			function takeme(ev) {
+				if(!isOver){
+					if(tarobj == null) 			{
+						tarobj = document.getElementById("cont1");
+					}
+					else {
+						objid = tarobj.id 
+						nxtNo = objid.slice(-1);
+						if(nxtNo > nofbox){
+							tarobj = null;
+							isOver = true;
+						}
+						else {
+						
+							tarobj = document.getElementById("cont" + ++nxtNo);
+						}
+					}
+				}
+				tarobj.innerText = ev.currentTarget.innerText;
+				if(isOver) tarobj = null;
+			}
+			function remme(ev) {
+				tarobj = ev.currentTarget;
+			}			
+			function CheckAns(){
+				
+				tabcontent = document.getElementsByClassName("rectc");
+				isResult = false;
+				for (i = 0; i <= nofbox; i++) {
+						ftext = tabcontent[i].innerText
+						stext = pron[queinc][ans[i]];
+						if(ftext == stext)
+							isResult = true;
+				}				
+					rsltbox = document.getElementById("result");
+					rsltbox.style.display = "block";
+				if(isResult) {
+					rsltbox.innerText = "OK";
+				}
+				else
+					rsltbox.innerText = "NOT OK";
+			}
+		</script>
+	</body>
+</html>
