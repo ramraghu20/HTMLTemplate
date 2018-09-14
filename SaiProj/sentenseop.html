@@ -1,0 +1,144 @@
+<html>
+	<head>
+		<title></title>
+		<style>
+
+		</style>
+	</head>
+
+	<body>
+		<div id="words">te</div>
+		<div id="ques"></div>
+		<div id="ansaf"></div>
+		<div id="ansne"></div>
+		<div id="ansin"></div>
+		<div id="navwrap">
+			<div class="btn" >Prev</div>
+			<div class="btn" onclick="nav()">Next</div>
+		</div>
+		<script>
+			init();
+			function init(){
+				init2();
+				nav();
+			}
+			function init2(){
+				voice = ["Active Voice", "Passive Voice"];
+				tense = ["Present", "Past", "Future"];
+				subtense = [["Simple",1,1], ["Continuous",0,0], ["Perfect",2,2], ["Perfect Continuous",2,3]];
+				pronoun = [["I",0,0],["You",0,2],["He",1,1],["She",1,1],["It",1,1],["We",0,2],["you",0,2],["They",0,2]];
+				verb = [["look",0],["go",1], ["come",1],["sit",1], ["stand",1],["eat",1], ["drink",1],["read",1],["write",1]];
+				verbconj = [["go","went","gone"], "come","sit", "stand","eat", "drink","read","write"];
+				voicelen = voice.length;
+				tenselen = tense.length-1;
+				subtenselen = subtense.length-1;
+				pronounlen = pronoun.length;
+				voiceinc = 0;
+				tenseinc = 0;
+				subtenseinc = 0;
+				pronouninc = 0;				
+				mainauxiliary = ["Be", "Do", "Have"];
+				subauxiliary = [
+					[["do","does"],["did"]],
+					[["am","is","are"],["was","were"]],
+					[["have","has"],["had"]]
+				];
+				
+			}
+			function nav(){
+			
+				objwords = document.getElementById("words");
+				objwords.innerText = pronoun[0][0] + " / " + verb[0][0];
+
+				obj = document.getElementById("ques");
+				if(subtenseinc == 0)
+					obj.innerText = subtense[subtenseinc][0] + " " + tense[tenseinc] + " Tense.";
+				else
+					obj.innerText = tense[tenseinc] + " " + subtense[subtenseinc][0] + " Tense.";
+				
+
+				
+				//B verb section
+					verbchk = verb[0];
+					verbstr = "";
+					auxverb = "";
+					if(verbchk[1] == 0) {
+						if(subtenseinc == 0) {
+							auxstr = subauxiliary[subtenseinc];
+							if(tenseinc == 0)
+								verbstr = verbchk[0];
+							else if(tenseinc == 1)
+								verbstr = verbchk[0] + "ed";
+							else
+								verbstr = "will " + verbchk[0];
+								
+							if(tenseinc == 2)
+								auxverb = "will be";							
+							else {
+								auxtense = auxstr[tenseinc];						
+								auxverb = auxtense[pronoun[pronouninc][1]];							
+							}								
+						}
+
+						else if(subtenseinc == 1) {
+													
+							auxstr = subauxiliary[subtenseinc];
+
+							if(tenseinc == 2)
+								auxverb = "will be";							
+							else {
+								auxtense = auxstr[tenseinc];						
+								auxverb = auxtense[pronoun[pronouninc][1]];							
+							}
+
+							verbstr = verbchk[0] + "ing";
+						}
+						else if(subtenseinc == 2) {
+													
+							auxstr = subauxiliary[subtenseinc];
+
+							if(tenseinc == 2)
+								auxverb = "will have";							
+							else {
+								auxtense = auxstr[tenseinc];						
+								auxverb = auxtense[pronoun[pronouninc][1]];							
+							}
+							verbstr = verbchk[0] + "ed";							
+						}
+
+						else if(subtenseinc == 3) {
+													
+							auxstr = subauxiliary[subtenseinc - 1];
+
+							if(tenseinc == 2)
+								auxverb = "will have been";							
+							else {
+								auxtense = auxstr[tenseinc];						
+								auxverb = auxtense[pronoun[pronouninc][1]] + " been";							
+							}
+							verbstr = verbchk[0] + "ing";							
+						}						
+																			
+					}
+					else {
+					}
+				//E verb section
+				
+				objansaf = document.getElementById("ansaf");
+				objansaf.innerText = pronoun[0][0] + " " + auxverb + " " + verbstr;
+				objansne = document.getElementById("ansne");
+				objansne.innerText = pronoun[0][0] + " " + auxverb + " not " + verbstr;
+				objansin = document.getElementById("ansin");
+				objansin.innerText =  auxverb.charAt(0).toUpperCase() + auxverb.slice(1) + " " + pronoun[0][0] + " " + verbstr + "?";
+				
+				if (tenseinc == tenselen){
+					tenseinc = 0;
+					subtenseinc++;
+				}
+				else {
+					tenseinc++;
+				}
+			}
+		</script>
+	</body>
+</html>

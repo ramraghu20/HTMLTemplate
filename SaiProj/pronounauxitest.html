@@ -102,14 +102,12 @@
 	</head>
 
 	<body>
-	
-	
 		<table>
 			<tr>
 				<td>
 					<table>
 						<tr>
-							<td class="trect" id="titleid">Sentance</td>
+							<td class="trect" id="titleid"></td>
 						</tr>
 					</table>				
 				</td>
@@ -149,7 +147,7 @@
 							<td><div class="rect noborder"></div></td>
 							<td><div class="rect noborder"></div></td>						
 							<td><div class="brect" onclick="nextQue('Prev')">Previous</div></td>
-							<td><div class="brect" onclick="disptense()">Next</div></td>
+							<td><div class="brect" onclick="nextQue('Next')">Next</div></td>
 						</tr>
 					</table>				
 				</td>
@@ -160,7 +158,6 @@
   <button class="tablinks" onclick="openCity(event, 'Subject')">Subject Pronoun</button>
   <button class="tablinks" onclick="openCity(event, 'Object')">Object Pronoun</button>
   <button class="tablinks" onclick="openCity(event, 'Possessive')">Possesive Pronoun</button>
-  <button class="tablinks" onclick="openCity(event, 'verb')">Verb</button>
 </div>
 
 	<div id="Subject" class="tabcontent">
@@ -205,19 +202,9 @@
 		</table>		
 	</div>
 
-	<div id="verb" class="tabcontent">
-		<table>
-			<tr>
-				<td><div class="rect" onclick="takeme(event)">go</div></td>
-				<td><div class="rect" onclick="takeme(event)">went</div></td>
-				<td><div class="rect" onclick="takeme(event)">gone</div></td>
-				<td><div class="rect" onclick="takeme(event)">going</div></td>
-				<td><div class="rect" onclick="takeme(event)">goes</div></td>
-			</tr>
-		</table>		
-	</div>
+
 	
-<script>
+	<script>
 function openCity(evt, cityName) {
     var i, tabcontent, tablinks;
     tabcontent = document.getElementsByClassName("tabcontent");
@@ -235,44 +222,22 @@ function openCity(evt, cityName) {
 		
 		<script>
 
-			var voice = [
-			"Active Voice",
-			"Passive Voice"
+			var aux = [
+			"is",
+			"are"
 			];		
-			var tense = [
-			"Present",
-			"Past",
-			"Future",
-			];		
-
-			var subtense = [
-			["Simple",1,1,1],
-			["Continuous",0,1,0],
-			["Perfect",0,1,1],
-			["Perfect Continuous",0,0,0]
-			];				
-			
-			var voicelen = voice.length;
-			var tense = tense.length;
-			var subtense = subtense.length;
-			
-			
+		
 			var tit = [
-			"present ense",
-			"object pronoun",
-			"possessive pronoun"
+			"present",
+			"past",
+			"future"
 			];		
 			var titlen = tit.length - 1;
 			var que = [
-			["What are the first person's",[0, 5]],
-			["What are the second person's",[1, 6]],
-			["What are the third person's",[2,3,4,7]],		
-			["What is the first person singular",[0]],
-			["What is the first person plural",[5]],
-			["What is the second person singular",[1]],
-			["What is the second person plural",[6]],
-			["What are the third persons singular",[2,3,4]],
-			["What is the third person plural",[7]]			
+			["simple",[0, 5]],
+			["continuous",[1, 6]],
+			["perfect",[2,3,4,7]],		
+			["perfect continuous",[0]]
 			];
 			var quelen = que.length - 1;
 			var pron = [
@@ -312,7 +277,7 @@ function openCity(evt, cityName) {
 				DispQue();
 			}
 			function DispQue(){
-				//console.log(queinc);
+			
 				if(queinc == 0){
 					if(titinc < titlen)
 						titinc++;
@@ -329,7 +294,7 @@ function openCity(evt, cityName) {
 				ans = que2[1];
 				adds = '';
 				if(chk > 0)  adds = 's';
-				obj.innerText =  (queinc + 1) + '. ' + tense[0] + ' ' + subtense[titinc] + adds;		
+				obj.innerText =  (queinc + 1) + '. ' + que2[0] + ' ' + tit[titinc] + adds + " and their auxiliary verb" + adds;		
 				isOver = false;
 				rsltbox = document.getElementById("result");
 				rsltbox.innerText = "Hi";
@@ -338,8 +303,7 @@ function openCity(evt, cityName) {
 			}
 
 			function nextQue(arg) {
-				console.log("Inc : " + queinc);				
-			var obj = document.getElementById("questionid");
+				var obj = document.getElementById("questionid");
 				var nofbox = 1;
 				if(arg == "Prev"){
 					if(queinc > 0)
@@ -351,8 +315,7 @@ function openCity(evt, cityName) {
 					else {
 						queinc = 0;
 					}
-				}			
-
+				}								
 				DispQue();
 			}
 			function showBox(){
@@ -409,15 +372,6 @@ function openCity(evt, cityName) {
 				}
 				else
 					rsltbox.innerText = "NOT OK";
-			}
-			
-			function disptense() {
-				tenseinc++;
-				subtenseinc++;
-			
-				obj = document.getElementById("questionid");
-				obj.innerText =  (queinc + 1) + '. ' + tense[0] + ' ' + subtense[titinc] + adds;		
-				queinc
 			}
 		</script>
 	</body>
