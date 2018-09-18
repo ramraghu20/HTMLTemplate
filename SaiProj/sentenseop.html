@@ -49,35 +49,44 @@
 			
 				objwords = document.getElementById("words");
 				objwords.innerText = pronoun[0][0] + " / " + verb[0][0];
-
+				spstatus = false;
 				obj = document.getElementById("ques");
 				if(subtenseinc == 0)
 					obj.innerText = subtense[subtenseinc][0] + " " + tense[tenseinc] + " Tense.";
 				else
-					obj.innerText = tense[tenseinc] + " " + subtense[subtenseinc][0] + " Tense.";
-				
+					obj.innerText = tense[tenseinc] + " " + subtense[subtenseinc][0] + " Tense.";			
 
 				
 				//B verb section
 					verbchk = verb[0];
 					verbstr = "";
+					verbstr2 = "";
 					auxverb = "";
 					if(verbchk[1] == 0) {
+						
 						if(subtenseinc == 0) {
+							spstatus = true;
 							auxstr = subauxiliary[subtenseinc];
-							if(tenseinc == 0)
+							if(tenseinc == 0){
 								verbstr = verbchk[0];
-							else if(tenseinc == 1)
-								verbstr = verbchk[0] + "ed";
-							else
-								verbstr = "will " + verbchk[0];
-								
-							if(tenseinc == 2)
-								auxverb = "will be";							
+								verbstr2 = verbchk[0];
+							}
+							else if(tenseinc == 1){
+								verbstr2 = verbchk[0] + "ed ";
+								verbstr = verbchk[0];
+							}
 							else {
-								auxtense = auxstr[tenseinc];						
-								auxverb = auxtense[pronoun[pronouninc][1]];							
-							}								
+								verbstr2 = "will " + verbchk[0];
+								verbstr = verbchk[0];								
+							}
+
+							if(tenseinc == 2)
+								auxverb = "will ";							
+							else {
+									auxtense = auxstr[tenseinc];						
+									auxverb = auxtense[pronoun[pronouninc][1]];							
+							}
+							
 						}
 
 						else if(subtenseinc == 1) {
@@ -85,25 +94,25 @@
 							auxstr = subauxiliary[subtenseinc];
 
 							if(tenseinc == 2)
-								auxverb = "will be";							
+								auxverb = "will be ";							
 							else {
 								auxtense = auxstr[tenseinc];						
 								auxverb = auxtense[pronoun[pronouninc][1]];							
 							}
 
-							verbstr = verbchk[0] + "ing";
+							verbstr = verbchk[0] + "ing ";
 						}
 						else if(subtenseinc == 2) {
 													
 							auxstr = subauxiliary[subtenseinc];
 
 							if(tenseinc == 2)
-								auxverb = "will have";							
+								auxverb = "will have ";							
 							else {
 								auxtense = auxstr[tenseinc];						
 								auxverb = auxtense[pronoun[pronouninc][1]];							
 							}
-							verbstr = verbchk[0] + "ed";							
+							verbstr = verbchk[0] + "ed ";							
 						}
 
 						else if(subtenseinc == 3) {
@@ -111,12 +120,12 @@
 							auxstr = subauxiliary[subtenseinc - 1];
 
 							if(tenseinc == 2)
-								auxverb = "will have been";							
+								auxverb = "will have been ";							
 							else {
 								auxtense = auxstr[tenseinc];						
-								auxverb = auxtense[pronoun[pronouninc][1]] + " been";							
+								auxverb = auxtense[pronoun[pronouninc][1]] + " been ";							
 							}
-							verbstr = verbchk[0] + "ing";							
+							verbstr = verbchk[0] + "ing ";							
 						}						
 																			
 					}
@@ -125,11 +134,36 @@
 				//E verb section
 				
 				objansaf = document.getElementById("ansaf");
-				objansaf.innerText = pronoun[0][0] + " " + auxverb + " " + verbstr;
+				if(spstatus)
+					objansaf.innerText = pronoun[0][0] + " " +  verbstr2;
+				else
+					objansaf.innerText = pronoun[0][0] + " " + auxverb + " " + verbstr;
 				objansne = document.getElementById("ansne");
-				objansne.innerText = pronoun[0][0] + " " + auxverb + " not " + verbstr;
+                if(tenseinc == 2){
+                    auxverbedt =  auxverb.replace("will", "will not ")
+                }
+                else if(subtenseinc == 3){
+                    //alert('Hi!');
+                    auxverbedtar =  auxverb.split(" ");
+                    auxverbedt =  auxverbedtar[0] + " not " + auxverbedtar[1] + " ";
+                }                
+                else
+                    auxverbedt = auxverb + " not " ;
+
+                objansne.innerText = pronoun[0][0] + " " + auxverbedt + verbstr;
 				objansin = document.getElementById("ansin");
-				objansin.innerText =  auxverb.charAt(0).toUpperCase() + auxverb.slice(1) + " " + pronoun[0][0] + " " + verbstr + "?";
+
+                if(tenseinc == 2){
+                    auxverbedt =  auxverb.replace("will", " ")
+                    objansin.innerText =  "Will " + pronoun[0][0] + " " + auxverbedt + verbstr + "?";
+                }   
+                else if(subtenseinc == 3){
+                    //alert('Hi!');
+                    auxverbedt =  auxverb.split(" ");
+                    objansin.innerText =  auxverbedt[0].charAt(0).toUpperCase() + auxverbedt[0].slice(1) + " " + pronoun[0][0] + " " + auxverbedt[1] + " " + verbstr + "?";
+                }
+                else
+                    objansin.innerText =  auxverb.charAt(0).toUpperCase() + auxverb.slice(1) + " " + pronoun[0][0] + " " + verbstr + "?";
 				
 				if (tenseinc == tenselen){
 					tenseinc = 0;
